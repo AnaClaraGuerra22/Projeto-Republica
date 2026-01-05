@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>República - Home</title>
+
+    <link rel="icon" type="image/png" href="/imagens/logo.jpeg">
+
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="republica-body">
+
+    <nav class="glass-nav">
+        <div class="logo">
+            <img src="/imagens/logo.jpeg" alt="Logo República do 804">
+            <span>República do 804</span>
+        </div>
+
+
+        <div class="nav-links">
+            <a href="/" class="active">Cálculo</a>
+            <a href="/galeria">Momentos</a>
+            <a href="/moradoras">Moradoras</a>
+            <a href="/historico">Histórico</a>
+            <a href="/estatisticas">Estatísticas</a>
+        </div>
+    </nav>
+
+    <main class="container">
+    
+
+        <section class="calc-section glass-card">
+            <h2 class="section-title"><i class="fa-solid fa-calculator"></i> Fechamento do Mês</h2>
+            
+            <form action="/financeiro/calcular" method="POST" id="calcForm">
+                <div class="form-group">
+                    <label for="mes">Mês de Referência:</label>
+                    <input type="month" id="mes" name="mes" required>
+                </div>
+
+                <div class="input-grid">
+                    <div class="form-group">
+                        <label for="luz">Valor da Luz (R$):</label>
+                        <input type="number" step="0.01" id="luz" name="luz" placeholder="0,00" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="condominio">Total Condomínio (R$):</label>
+                        <input type="number" step="0.01" id="condominio" name="condominio" placeholder="0,00" required>
+                    </div>
+                </div>
+
+                <div class="prop-expenses-box">
+                    <label>Despesas do Proprietário (Abatimento):</label>
+                    <p class="hint">Some aqui itens como: Vistoria, Reparos e Fundo de Reserva conforme detalhado no boleto.</p>
+                    <div id="expenseList">
+                        <div class="expense-row">
+                            <input type="number" step="0.01" class="prop-item" placeholder="Valor do item">
+                            <button type="button" class="btn-add" onclick="addExpense()"><i class="fa fa-plus"></i></button>
+                        </div>
+                    </div>
+                    <input type="hidden" id="despesa_prop" name="despesa_prop" value="0">
+                    <div class="total-prop">Total a abater no aluguel: R$ <span id="totalAbatimento">0.00</span></div>
+                </div>
+
+                <button type="submit" class="btn-primary">Calcular Divisão</button>
+            </form>
+        </section>
+    </main>
+
+    <script>
+        function addExpense() {
+            const container = document.getElementById('expenseList');
+            const newRow = document.createElement('div');
+            newRow.className = 'expense-row';
+            newRow.innerHTML = `
+                <input type="number" step="0.01" class="prop-item" placeholder="Valor do item" oninput="updateTotal()">
+                <button type="button" class="btn-remove" onclick="this.parentElement.remove(); updateTotal()"><i class="fa fa-trash"></i></button>
+            `;
+            container.appendChild(newRow);
+        }
+
+        function updateTotal() {
+            const items = document.querySelectorAll('.prop-item');
+            let total = 0;
+            items.forEach(item => {
+                total += parseFloat(item.value) || 0;
+            });
+            document.getElementById('totalAbatimento').innerText = total.toFixed(2);
+            document.getElementById('despesa_prop').value = total;
+        }
+
+        document.querySelector('.prop-item').addEventListener('input', updateTotal);
+    </script>
+</body>
+</html>

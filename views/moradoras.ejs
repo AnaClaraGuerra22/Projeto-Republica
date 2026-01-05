@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Moradoras - República do 804</title>
+    <link rel="icon" type="image/png" href="/imagens/logo.jpeg">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="republica-body">
+
+    <nav class="glass-nav">
+        <div class="logo">
+            <img src="/imagens/logo.jpeg" alt="Logo">
+            <span>República do 804</span>
+        </div>
+        <div class="nav-links">
+            <a href="/">Cálculo</a>
+            <a href="/galeria">Momentos</a>
+            <a href="/moradoras" class="active">Moradoras</a>
+            <a href="/historico">Histórico</a>
+            <a href="/estatisticas">Estatísticas</a>
+        </div>
+    </nav>
+
+    <main class="container">
+        <h2 class="section-title">Moradoras</h2>
+        
+        <div class="moradoras-grid">
+            <% moradoras.forEach(m => { %>
+                <div class="moradora-card <%= m.status === 'Inativo' ? 'inativo' : '' %>">
+                    <div class="foto-container">
+                        <img src="<%= m.foto %>" alt="<%= m.nome %>" class="foto-moradora">
+                    </div>
+                    <div class="info-moradora">
+                        <h3><%= m.nome %></h3>
+                        <p><strong>Curso:</strong> <%= m.curso %></p>
+                        <p><strong>Período:</strong> <%= m.entrada %> — <%= m.saida %></p>
+                        
+                        <div class="contatos-moradora">
+                            <p title="E-mail"><i class="fa fa-envelope"></i> <%= m.email %></p>
+                            <p title="Celular"><i class="fa fa-phone"></i> <%= m.celular %></p>
+                            <p title="Contato Pais" class="contato-pais"><i class="fa fa-users"></i> Pais: <%= m.pais %></p>
+                        </div>
+
+                        <p class="desc"><%= m.info %></p>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    </main>
+
+</body>
+</html>

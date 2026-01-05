@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Histórico - República 804</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="republica-body">
+
+    <nav class="glass-nav">
+        <div class="logo">
+            <img src="/imagens/logo.jpeg" alt="Logo">
+            <span>República 804</span>
+        </div>
+        <div class="nav-links">
+            <a href="/">Cálculo</a>
+            <a href="/galeria">Momentos</a>
+            <a href="/moradoras">Moradoras</a>
+            <a href="/historico" class="active">Histórico</a> 
+            <a href="/estatisticas">Estatísticas</a>
+        </div>
+    </nav>
+
+    <main class="container">
+        <section class="glass-card">
+            <h2 class="section-title">Histórico de Fechamentos</h2>
+            
+            <table class="resultado-table">
+                <thead>
+                    <tr>
+                        <th>Mês</th>
+                        <th>Luz (R$)</th>
+                        <th>Total (R$)</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (historico.length > 0) { %>
+                        <% historico.forEach(f => { %>
+                            <tr>
+                                <td><%= f.mes_referencia %></td>
+                                <td><%= f.valor_luz %></td>
+                                <td><strong><%= f.valor_total_pago %></strong></td>
+                                <td>
+                                    <button class="btn-detalhes" title="Ver Detalhes">
+                                        <i class="fa fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="4">Nenhum fechamento salvo ainda.</td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </section>
+    </main>
+</body>
+</html>

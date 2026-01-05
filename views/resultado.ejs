@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Resultado - República 804</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="republica-body">
+    <nav class="glass-nav">
+        <div class="logo">
+            <img src="/imagens/logo.jpeg" alt="Logo">
+            <span>República 804</span>
+        </div>
+        <div class="nav-links">
+            <a href="/">Voltar ao Cálculo</a>
+        </div>
+    </nav>
+
+    <main class="container">
+        <section class="glass-card">
+            <h2 class="section-title">Resumo do Mês: <%= resultado.mes %></h2>
+            
+            <div class="resumo-geral">
+                <p><strong>Total Geral das Contas:</strong> R$ <%= resultado.totalGeral %></p>
+                <p><strong>Valor para Imobiliária:</strong> R$ <%= resultado.imobiliaria %></p>
+                <p class="hint">*(Aluguel + Seguro - Abatimento do Proprietário)</p>
+            </div>
+
+            <table class="resultado-table">
+                <thead>
+                    <tr>
+                        <th>Moradora</th>
+                        <th>Valor a Pagar</th>
+                        <th>Observação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% resultado.detalhes.forEach(item => { %>
+                        <tr>
+                            <td><%= item.nome %></td>
+                            <td class="valor-destaque">R$ <%= item.valor %></td>
+                            <td><small><%= item.nota || '-' %></small></td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+
+            <div class="acoes-resultado">
+                <form action="/financeiro/salvar" method="POST" style="margin-bottom: 10px;">
+                    <input type="hidden" name="dadosEscondidos" value='<%= JSON.stringify(resultado) %>'>
+                    
+                    <button type="submit" class="btn-primary" style="background-color: #332f2c;">
+                        <i class="fa fa-save"></i> Confirmar e Salvar no Histórico
+                    </button>
+                </form>
+
+                <button onclick="window.print()" class="btn-primary" style="background: none; border: 1px solid #8b735b; color: #8b735b;">
+                    <i class="fa fa-print"></i> Imprimir ou Salvar PDF
+                </button>
+                
+                <a href="/" class="btn-secondary" style="display: block; text-align: center; margin-top: 15px; text-decoration: none; color: #8b735b;">Novo Cálculo</a>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

@@ -1,0 +1,303 @@
+:root {
+    --bg-color: #f4f1ea;       
+    --text-color: #332f2c;     
+    --card-bg: #ffffff;        
+    --accent-color: #8b735b;   
+    --secondary-color: #d7d1c2; 
+    --nav-bg: rgba(244, 241, 234, 0.9);
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Georgia', serif; 
+    margin: 0;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 80px auto;
+    padding: 20px;
+}
+
+.glass-nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 60px;
+    background: var(--nav-bg);
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 1000;
+    border-bottom: 1px solid var(--secondary-color);
+}
+
+.nav-links a {
+    color: var(--text-color);
+    text-decoration: none;
+    margin: 0 15px;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: 0.3s;
+}
+
+.nav-links a.active, .nav-links a:hover {
+    border-bottom: 1px solid var(--accent-color);
+}
+
+.photo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 60px;
+    padding: 20px 0;
+    /*justify-items: center; */
+}
+
+.polaroid {
+    background: #ffffff;
+    padding: 12px 12px 30px 12px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    border: 1px solid #eee;
+    transition: transform 0.4s ease;
+}
+
+.polaroid img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    filter: sepia(10%); 
+}
+
+.polaroid .caption {
+    color: #555;
+    text-align: center;
+    margin-top: 15px;
+    font-family: 'Dancing Script', cursive; 
+    font-size: 1.1rem;
+}
+
+.glass-card {
+    background: var(--card-bg);
+    padding: 40px;
+    border-radius: 4px; 
+    border: 1px solid var(--secondary-color);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+.section-title {
+    text-align: center;
+    font-weight: normal;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 40px;
+    color: var(--accent-color);
+}
+
+.form-group label {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    background: #fafafa;
+    border: 1px solid var(--secondary-color);
+    border-radius: 0; 
+    color: var(--text-color);
+    font-size: 1rem;
+}
+
+.input-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+}
+
+
+.prop-expenses-box {
+    background: #fdfdfd;
+    padding: 25px;
+    border: 1px dashed var(--secondary-color);
+    margin: 30px 0;
+}
+
+.total-prop {
+    font-size: 1.1rem;
+    color: var(--accent-color);
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 18px;
+    background: var(--accent-color);
+    color: white;
+    border: none;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.4s;
+}
+
+.btn-primary:hover {
+    background: var(--text-color);
+}
+
+.btn-add { background: var(--secondary-color); color: var(--text-color); }
+.btn-remove { background: #eee; color: #999; }
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo img {
+    height: 42px;    
+    width: auto;
+    filter: sepia(10%);
+}
+
+.logo span {
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-color);
+}
+
+
+.resultado-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 30px 0;
+}
+
+.resultado-table th {
+    text-align: left;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    padding: 15px;
+    border-bottom: 2px solid var(--secondary-color);
+}
+
+.resultado-table td {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.valor-destaque {
+    font-weight: bold;
+    color: var(--accent-color);
+    font-size: 1.2rem;
+}
+
+.resumo-geral {
+    background: #fafafa;
+    padding: 20px;
+    border-left: 4px solid var(--accent-color);
+    margin-bottom: 20px;
+}
+
+.btn-secondary:hover {
+    text-decoration: underline;
+}
+
+/* Grid de Moradoras */
+.moradoras-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+}
+
+/* Card Individual */
+.moradora-card {
+    background: var(--card-bg);
+    border: 1px solid var(--secondary-color);
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.moradora-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Foto da Moradora */
+.foto-moradora {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--secondary-color);
+    margin-bottom: 15px;
+    transition: filter 0.3s ease, opacity 0.3s ease;
+}
+
+/* Efeito para Moradoras INATIVAS (Preto e Branco / Fosco) */
+.moradora-card.inativo .foto-moradora {
+    filter: grayscale(100%) contrast(0.8);
+    opacity: 0.6;
+}
+
+.moradora-card.inativo {
+    background-color: #f9f9f9; /* Um tom levemente mais cinza para o card */
+}
+
+/* Textos do Card */
+.info-moradora h3 {
+    margin: 10px 0;
+    color: var(--accent-color);
+    text-transform: uppercase;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+}
+
+.info-moradora p {
+    font-size: 0.9rem;
+    margin: 5px 0;
+    color: var(--text-color);
+}
+
+.contatos-moradora {
+    margin: 10px 0;
+    padding: 8px;
+    background: rgba(139, 115, 91, 0.05); /* Um bege bem clarinho */
+    border-radius: 5px;
+    font-size: 0.85rem;
+    text-align: left;
+}
+
+.contatos-moradora p {
+    margin: 3px 0 !important;
+    color: #555;
+}
+
+.contatos-moradora i {
+    width: 20px;
+    color: var(--accent-color);
+}
+
+.contato-pais {
+    border-top: 1px solid #ddd;
+    margin-top: 5px !important;
+    padding-top: 5px;
+    font-weight: bold;
+}
+
+.desc {
+    font-style: italic;
+    color: #888;
+    margin-top: 10px !important;
+}
