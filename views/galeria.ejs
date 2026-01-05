@@ -2,8 +2,10 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Galeria - República do 804</title>
+    <title>Galeria - República 804</title>
+    <link rel="icon" type="image/png" href="/imagens/logo.jpeg">
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body class="republica-body">
 
@@ -23,126 +25,95 @@
 
     <main class="container">
         <section class="photo-feed">
-            <h2 class="section-title">Momentos</h2>
+            <div style="margin-bottom: 30px; text-align: center;">
+                <h2 class="section-title">Momentos</h2>
+            </div>
+
             <div class="photo-grid">
-                <div class="polaroid">
-                    <img src="/imagens/juliaBeca.jpeg" alt="Julia Formanda">
-                    <p class="caption">Julia Formanda</p>
-                </div>
-                <div class="polaroid">
-                    <img src="/imagens/becaIsa.jpeg" alt="Isa Formanda">
-                    <p class="caption">Isa Formanda</p>
-                </div>
-                <div class="polaroid">
-                    <img src="/imagens/bioJulia.jpeg" alt="Biografia da Julia">
-                    <p class="caption">Biografia da Julia</p>
-                </div>
-                <div class="polaroid">
-                    <img src="/imagens/boiadeiros.jpeg" alt="Trabalhadoras">
-                    <p class="caption">Trabalhadoras</p>
-                </div>
-                <div class="polaroid">
-                    <img src="/imagens/churrascaria.jpeg" alt="Almocinho de domingo">
-                    <p class="caption">Almocinho de domingo</p>
-                </div>
-                <div class="polaroid">
-                    <img src="/imagens/engenhariadas.jpeg" alt="Festa da Engenharia">
-                    <p class="caption">Festa da Engenharia</p>
-                </div>
-                <div class="polaroid">
-                    <img src="/imagens/ensaioIsa.jpeg" alt="Ensaio da Isa">
-                    <p class="caption">Ensaio da Isa</p>
-                </div>
-                <div class="polaroid">
-                    <img src="/imagens/ensaioJulia.jpeg" alt="Ensaio da Julia">
-                    <p class="caption">Ensaio da Julia</p>
-                </div>
-                <div class="polaroid">
-                    <img src="/imagens/formaturaMaria.jpeg" alt="Formatura Maria">
-                    <p class="caption">Formatura Maria</p>
-                </div>
-                <div class="polaroid">
-                    <img src="/imagens/gina.jpeg" alt="Calourada da gina">
-                    <p class="caption">Calourada da gina</p>
-                </div>
-                <div class="polaroid">
-                    <img src="/imagens/mlqb.jpeg" alt="Mais Louco que o Batman">
-                    <p class="caption">Mais Louco que o Batman</p>
-                </div>
-                <div class="polaroid">
-                    <img src="/imagens/halloween.jpeg" alt="Halloween">
-                    <p class="caption">Halloween</p>
-                </div>
-                <div class="polaroid">
-                    <img src="/imagens/natal2023.jpeg" alt="Natal de 2023">
-                    <p class="caption">Natal de 2023</p>
-                </div>
-                <div class="polaroid">
-                    <img src="/imagens/natal2024.jpeg" alt="Natal 2024">
-                    <p class="caption">Natal 2024</p>
-                </div>
-                <div class="polaroid">
-                    <img src="/imagens/natal2025.jpeg" alt="Natal 2025">
-                    <p class="caption">Natal 2025</p>
-                </div>
-                <div class="polaroid">
-                    <img src="/imagens/niverJulia.jpeg" alt="Aniversario Julia">
-                    <p class="caption">Aniversario da Julia</p>
-                </div>
-                <div class="polaroid">
-                    <img src="/imagens/quintanejaMeninas.jpeg" alt="Quintaneja">
-                    <p class="caption">Quintaneja</p>
-                </div>
-                <div class="polaroid">
-                    <img src="/imagens/nicolopes2023.jpeg" alt="Nicolopes 2023">
-                    <p class="caption">Nicolopes 2023</p>
-                </div>
-                <div class="polaroid">
-                    <img src="/imagens/nicolopes2025.jpeg" alt="Nicolopes 2025">
-                    <p class="caption">Nicolopes 2025</p>
-                </div>
-                <div class="polaroid">
-                    <img src="/imagens/niverAna2022.jpeg" alt="Niver Ana 2022">
-                    <p class="caption">Niver Ana 2022</p>
-                </div>
-                <div class="polaroid">
-                    <img src="/imagens/niverAna2023.jpeg" alt="Niver Ana 2023">
-                    <p class="caption">Niver Ana 2023</p>
-                </div>
-                <div class="polaroid">
-                    <img src="/imagens/praia.jpeg" alt="Ano Novo 2025">
-                    <p class="caption">Ano Novo 2025</p>
-                </div>
-                <div class="polaroid">
-                    <img src="/imagens/caminhada.jpeg" alt="Caminhada">
-                    <p class="caption">Caminhada</p>
-                </div>
-                <div class="polaroid">
-                    <img src="/imagens/quintaneja.jpeg" alt="Quintaneja">
-                    <p class="caption">Quintaneja</p>
-                </div>
-                <div class="polaroid">
-                    <img src="/imagens/rita.jpeg" alt="Rita Aleatoria">
-                    <p class="caption">Rita Aleatoria</p>
-                </div>
-                <div class="polaroid">
-                    <img src="/imagens/vitoria.jpeg" alt="Bar em Vitoria - ES">
-                    <p class="caption">Bar em Vitoria - ES</p>
-                </div>
-                <div class="polaroid">
-                    <img src="/imagens/seuBar.jpeg" alt="Seu Bar com visita da Maria">
-                    <p class="caption">Seu Bar com visita da Maria</p>
-                </div>
-                <div class="polaroid">
-                    <img src="/imagens/spring.jpeg" alt="Spring">
-                    <p class="caption">Spring</p>
-                </div>
-                <div class="polaroid">
-                    <img src="/imagens/tccJulia.jpeg" alt="TCC da Julia">
-                    <p class="caption">TCC da Julia</p>
-                </div>
+                <% if (fotos.length === 0) { %>
+                    <p style="text-align: center; grid-column: 1/-1; color: #888;">Nenhum momento postado ainda. Comece a subir as fotos da casa!</p>
+                <% } %>
+
+                <% fotos.forEach(foto => { %>
+                    <div class="polaroid" style="position: relative;">
+                        
+                        <div class="admin-controls">
+                            <button onclick="toggleForm('edit-galeria-<%= foto.id %>')" title="Editar">
+                                <i class="fa fa-pencil"></i>
+                            </button>
+                            <form action="/galeria/deletar/<%= foto.id %>" method="POST" onsubmit="return confirm('Apagar esta foto da galeria?')">
+                                <button type="submit" title="Excluir">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+
+                        <div id="edit-galeria-<%= foto.id %>" class="glass-card edit-overlay-galeria" style="display: none;">
+                            <form action="/galeria/editar/<%= foto.id %>" method="POST" enctype="multipart/form-data">
+                                <h4 style="font-size: 0.9rem; margin-bottom: 10px;">Editar Momento</h4>
+                                <input type="text" name="legenda" value="<%= foto.legenda %>" required style="width: 100%; margin-bottom: 10px; padding: 5px;">
+                                <label style="font-size: 0.7rem;">Trocar foto (opcional):</label>
+                                <input type="file" name="foto_galeria_edit" accept="image/*" style="font-size: 0.7rem; margin-bottom: 15px;">
+                                
+                                <div style="display: flex; gap: 10px;">
+                                    <button type="submit" class="btn-primary" style="font-size: 0.8rem; padding: 5px 10px;">Salvar</button>
+                                    <button type="button" onclick="toggleForm('edit-galeria-<%= foto.id %>')" style="font-size: 0.8rem;">Voltar</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <img src="<%= foto.url_foto %>" alt="<%= foto.legenda %>">
+                        <p class="caption"><%= foto.legenda %></p>
+                    </div>
+                <% }) %>
+            </div>
+
+            <div style="margin-top: 50px; text-align: center; padding-bottom: 50px;">
+                <button id="btn-show-add" onclick="toggleForm('form-add-galeria')" class="btn-primary" style="padding: 12px 25px;">
+                    <i class="fa fa-camera"></i> Adicionar Nova Foto
+                </button>
+
+                <section id="form-add-galeria" class="glass-card" style="display:none; margin-top: 30px; padding: 25px; text-align: left;">
+                    <h3 style="margin-bottom: 15px; color: var(--accent-color);">Postar na Galeria</h3>
+                    <form action="/galeria/adicionar" method="POST" enctype="multipart/form-data">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+                            <div style="display: flex; flex-direction: column;">
+                                <label style="font-size: 0.8rem; margin-bottom: 5px;">Legenda:</label>
+                                <input type="text" name="legenda" placeholder="Escreva algo sobre esse momento..." required style="padding: 10px; border-radius: 5px; border: 1px solid #ddd;">
+                            </div>
+                            <div style="display: flex; flex-direction: column;">
+                                <label style="font-size: 0.8rem; margin-bottom: 5px;">Escolher Foto:</label>
+                                <input type="file" name="foto_galeria" accept="image/*" required style="padding: 5px;">
+                            </div>
+                        </div>
+                        <div style="margin-top: 20px;">
+                            <button type="submit" class="btn-primary">Publicar Momento</button>
+                            <button type="button" onclick="toggleForm('form-add-galeria')" style="background:none; border:none; cursor:pointer; margin-left:10px; color: #888;">Cancelar</button>
+                        </div>
+                    </form>
+                </section>
             </div>
         </section>
     </main>
+
+    <script>
+        function toggleForm(id) {
+            const form = document.getElementById(id);
+            const btnAdd = document.getElementById('btn-show-add');
+
+            if (form.style.display === 'none' || form.style.display === '') {
+                form.style.display = 'block';
+                if(id === 'form-add-galeria' && btnAdd) btnAdd.style.display = 'none';
+                
+                // Rola a página suavemente para o formulário
+                setTimeout(() => {
+                    form.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            } else {
+                form.style.display = 'none';
+                if(id === 'form-add-galeria' && btnAdd) btnAdd.style.display = 'inline-block';
+            }
+        }
+    </script>
 </body>
 </html>

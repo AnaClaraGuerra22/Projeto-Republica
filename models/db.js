@@ -4,11 +4,11 @@ const Database = require('better-sqlite3');
 const dbPath = path.join(__dirname, '../data', 'gastos.db');
 const db = new Database(dbPath);
 
-// fechamento mensal geral
+// fechamento mensal historico
 db.exec(`
 CREATE TABLE IF NOT EXISTS fechamentos (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    mes_referencia TEXT NOT NULL, -- Ex: "Janeiro 2026"
+    mes_referencia TEXT NOT NULL,
     valor_luz REAL,
     valor_condominio REAL,
     despesas_proprietario REAL,
@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS fechamentos (
 );
 `);
 
-// moradoras pro historico individual
+// pagamento individual
 db.exec(`
 CREATE TABLE IF NOT EXISTS pagamentos_moradoras (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS pagamentos_moradoras (
 );
 `);
 
-// fotos galeria
+// fotos
 db.exec(`
 CREATE TABLE IF NOT EXISTS galeria (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -68,6 +68,24 @@ function salvarFechamento(dados) {
 
     transacao(dados);
 }
+
+// moradoras
+db.prepare(`
+    CREATE TABLE IF NOT EXISTS moradoras (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome TEXT, 
+        status TEXT, 
+        curso TEXT, 
+        entrada TEXT, 
+        saida TEXT, 
+        foto TEXT, 
+        info TEXT, 
+        email TEXT, 
+        celular TEXT, 
+        pais TEXT
+    )
+`).run();
+
 
 module.exports = { db, salvarFechamento };
 

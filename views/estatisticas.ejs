@@ -2,12 +2,17 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Estatísticas - República do 804</title>
+    <title>Estatísticas - República 804</title>
+    <link rel="icon" type="image/png" href="/imagens/logo.jpeg">
     <link rel="stylesheet" href="/css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="republica-body">
     <nav class="glass-nav">
+        <div class="logo">
+            <img src="/imagens/logo.jpeg" alt="Logo">
+            <span>República 804</span>
+        </div>
         <div class="nav-links">
             <a href="/">Cálculo</a>
             <a href="/galeria">Momentos</a>
@@ -22,78 +27,142 @@
             <h2 class="section-title">Análise de Gastos</h2>
 
             <div class="filter-box" style="text-align: right; margin-bottom: 20px;">
-                <label for="periodo" style="font-size: 0.8rem; text-transform: uppercase;">Visualizar:</label>
-                <select id="periodo" onchange="filtrarGrafico()" style="padding: 5px; border: 1px solid var(--secondary-color); background: white; font-family: 'Georgia', serif;">
+                <label for="periodo" style="font-size: 0.8rem; text-transform: uppercase; color: #666;">Visualizar:</label>
+                <select id="periodo" onchange="filtrarGrafico()" style="padding: 6px 12px; border: 1px solid var(--secondary-color); border-radius: 4px; background: white; font-family: 'Georgia', serif; cursor: pointer;">
                     <option value="3">Últimos 3 meses</option>
                     <option value="6">Últimos 6 meses</option>
                     <option value="12" selected>Último ano</option>
                 </select>
             </div>
+
+            <div class="chart-container" style="margin-bottom: 60px; height: 320px;">
+                <h3 style="text-align: center; color: #722f37; font-size: 1rem; margin-bottom: 20px;">Evolução do Gasto Total da Casa (R$)</h3>
+                <canvas id="chartTotal"></canvas>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid var(--secondary-color); margin: 40px 0;">
             
-            <div class="chart-container" style="margin-bottom: 60px; height: 300px;">
-                <h3 style="text-align: center; color: var(--accent-color); font-size: 1rem;">Variação da Conta de Luz</h3>
+            <div class="chart-container" style="margin-bottom: 60px; height: 320px;">
+                <h3 style="text-align: center; color: var(--accent-color); font-size: 1rem; margin-bottom: 20px;">Variação da Conta de Luz (R$)</h3>
                 <canvas id="chartLuz"></canvas>
             </div>
 
             <hr style="border: 0; border-top: 1px solid var(--secondary-color); margin: 40px 0;">
 
-            <div class="chart-container" style="height: 400px;">
-                <h3 style="text-align: center; color: var(--accent-color); font-size: 1rem;">Pagamentos Individuais</h3>
+            <div class="chart-container" style="height: 450px;">
+                <h3 style="text-align: center; color: var(--accent-color); font-size: 1rem; margin-bottom: 10px;">Pagamentos Individuais (R$)</h3>
+                <p style="text-align: center; font-size: 0.75rem; color: #888; margin-bottom: 20px;">Clique no nome para ignora-lo</p>
                 <canvas id="chartMoradoras"></canvas>
             </div>
         </section>
     </main>
 
     <script>
-        let graficoLuz, graficoMoradoras;
-        const dadosLuzBase = <%- JSON.stringify(dadosLuz) %>;
+        let graficoTotal, graficoLuz, graficoMoradoras;
+        const dadosBase = <%- JSON.stringify(dadosLuz) %>; 
         const dadosPagamentosBase = <%- JSON.stringify(dadosPagamentos) %>;
 
-        function renderizarGraficos(mesesFiltradosLuz, mesesFiltradosPagamentos) {
+        function renderizarGraficos(dadosFiltrados, pagamentosFiltrados) {
+            if (graficoTotal) graficoTotal.destroy();
             if (graficoLuz) graficoLuz.destroy();
             if (graficoMoradoras) graficoMoradoras.destroy();
 
+            const labelsMeses = dadosFiltrados.map(d => d.mes_referencia);
+
+            // GRAFICO GASTO TOTAL
+            const ctxTotal = document.getElementById('chartTotal').getContext('2d');
+            graficoTotal = new Chart(ctxTotal, {
+                type: 'line', 
+                data: {
+                    labels: labelsMeses,
+                    datasets: [{
+                        label: 'Gasto Total',
+                        data: dadosFiltrados.map(d => d.valor_total_pago),
+                        borderColor: '#722f37',
+                        backgroundColor: 'rgba(114, 47, 55, 0.1)',
+                        fill: true,
+                        tension: 0.3,
+                        borderWidth: 4,
+                        pointRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { ticks: { callback: v => 'R$ ' + v } } }
+                }
+            });
+
+            // GRAFICO DE LUZ
             const ctxLuz = document.getElementById('chartLuz').getContext('2d');
             graficoLuz = new Chart(ctxLuz, {
                 type: 'line',
                 data: {
-                    labels: mesesFiltradosLuz.map(d => d.mes_referencia),
+                    labels: labelsMeses,
                     datasets: [{
-                        label: 'Luz (R$)',
-                        data: mesesFiltradosLuz.map(d => d.valor_luz),
+                        label: 'Luz',
+                        data: dadosFiltrados.map(d => d.valor_luz),
                         borderColor: '#8b735b',
                         backgroundColor: 'rgba(139, 115, 91, 0.1)',
                         fill: true,
-                        tension: 0.3
+                        tension: 0.3,
+                        borderWidth: 3,
+                        pointRadius: 5
                     }]
                 },
-                options: { responsive: true, maintainAspectRatio: false }
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { ticks: { callback: v => 'R$ ' + v } } }
+                }
             });
 
-            const mesesLabels = [...new Set(mesesFiltradosPagamentos.map(d => d.mes_referencia))];
+            // GRAFICO DE MORADORAS 
             const nomes = ["ANA", "EDUARDA", "JULIA", "MENINAS"];
-            const cores = ['#332f2c', '#8b735b', '#d7d1c2', '#a69f8d'];
+            const cores = ['#2d3436', '#e67e22', '#27ae60', '#2980b9'];
 
-            const datasets = nomes.map((nome, i) => ({
+            const datasetsMoradoras = nomes.map((nome, i) => ({
                 label: nome,
-                data: mesesLabels.map(m => {
-                    const r = mesesFiltradosPagamentos.find(d => d.nome === nome && d.mes_referencia === m);
-                    return r ? r.valor_pago : null;
+                data: labelsMeses.map(m => {
+                    const r = pagamentosFiltrados.find(d => d.nome === nome && d.mes_referencia === m);
+                    return r ? r.valor_pago : 0; 
                 }),
-                borderColor: cores[i],
                 backgroundColor: cores[i],
-                tension: 0.2
+                borderColor: cores[i],
+                borderWidth: 1,
+                borderRadius: 4 
             }));
 
             const ctxMor = document.getElementById('chartMoradoras').getContext('2d');
             graficoMoradoras = new Chart(ctxMor, {
-                type: 'line',
-                data: { labels: mesesLabels, datasets: datasets },
+                type: 'bar', 
+                data: { labels: labelsMeses, datasets: datasetsMoradoras },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { position: 'bottom', labels: { font: { family: 'Georgia' } } }
+                        legend: { 
+                            position: 'bottom', 
+                            labels: { padding: 20, font: { family: 'Georgia' } } 
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': R$ ' + context.raw.toFixed(2);
+                                }
+                            }
+                        }
+                    },
+                    scales: { 
+                        x: {
+                            grid: { display: false } 
+                        },
+                        y: { 
+                            min: 800,
+                            ticks: { callback: v => 'R$ ' + v } 
+                        } 
                     }
                 }
             });
@@ -101,16 +170,14 @@
 
         function filtrarGrafico() {
             const limite = parseInt(document.getElementById('periodo').value);
-            const luzFiltrada = dadosLuzBase.slice(-limite);
-            
-            const mesesValidos = luzFiltrada.map(l => l.mes_referencia);
+            const dadosFiltrados = dadosBase.slice(-limite);
+            const mesesValidos = dadosFiltrados.map(l => l.mes_referencia);
             const pagamentosFiltrados = dadosPagamentosBase.filter(p => mesesValidos.includes(p.mes_referencia));
 
-            renderizarGraficos(luzFiltrada, pagamentosFiltrados);
+            renderizarGraficos(dadosFiltrados, pagamentosFiltrados);
         }
 
         filtrarGrafico();
     </script>
-
 </body>
 </html>
