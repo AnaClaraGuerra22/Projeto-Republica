@@ -1,17 +1,11 @@
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
+const multer = require('multer');
 const { db } = require('./models/db');
 const app = express();
-const multer = require('multer');
 
-
-const fs = require('fs');
-const uploadDir = path.join(__dirname, 'public', 'imagens');
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-// usar Render
+// 1. GARANTIR QUE AS PASTAS EXISTAM (Essencial para o Render)
 const pastas = [
     path.join(__dirname, 'data'),
     path.join(__dirname, 'public', 'imagens')
@@ -24,24 +18,7 @@ pastas.forEach(p => {
     }
 });
 
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
-app.use(express.static(path.join(__dirname, 'public')));
-
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// onde salvar as fotos
-/*
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => { cb(null, 'public/imagens/'); },
-    filename: (req, file, cb) => { cb(null, Date.now() + '-' + file.originalname); }
-});
-const upload = multer({ storage: storage });
-*/
-
-// ajuste para render
+// 2. CONFIGURAÇÃO DO MULTER (Definindo a variável 'upload' antes das rotas)
 const storage = multer.diskStorage({
     destination: (req, file, cb) => { 
         cb(null, path.join(__dirname, 'public', 'imagens')); 
@@ -50,16 +27,25 @@ const storage = multer.diskStorage({
         cb(null, Date.now() + '-' + file.originalname); 
     }
 });
+const upload = multer({ storage: storage });
 
+// 3. CONFIGURAÇÕES DO APP
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
+// 4. IMPORTAÇÃO DE ROTAS EXTERNAS
 const financeiroRoutes = require('./routes/financeiro');
 app.use('/financeiro', financeiroRoutes);
 
+// 5. ROTAS GERAIS
 app.get('/', (req, res) => {
     res.render('index');
 });
 
-
+// --- GALERIA ---
 app.get('/galeria', (req, res) => {
     const fotos = db.prepare("SELECT * FROM galeria ORDER BY data_postagem DESC").all();
     res.render('galeria', { fotos });
@@ -82,7 +68,6 @@ app.post('/galeria/editar/:id', upload.single('foto_galeria_edit'), (req, res) =
     try {
         const { legenda } = req.body;
         const fotoExistente = db.prepare("SELECT url_foto FROM galeria WHERE id = ?").get(req.params.id);
-        
         const url_foto = req.file ? `/imagens/${req.file.filename}` : fotoExistente.url_foto;
 
         db.prepare("UPDATE galeria SET legenda = ?, url_foto = ? WHERE id = ?")
@@ -99,120 +84,22 @@ app.post('/galeria/deletar/:id', (req, res) => {
     db.prepare("DELETE FROM galeria WHERE id = ?").run(req.params.id);
     res.redirect('/galeria');
 });
-/*
 
-app.get('/moradoras', (req, res) => {
-    const listaMoradoras = [
-        { 
-            nome: "Ana", 
-            status: "Ativo", 
-            curso: "Ciência da Computação", 
-            entrada: "08/2022", 
-            saida: "-", 
-            foto: "/imagens/ana.jpeg",
-            info: "Suíte",
-            email: "ana.torres1@ufv.br",
-            celular: "(31) 99435-3574",
-            pais: "(31) 99400-3574"
-        },
-        { 
-            nome: "Maria Cecilia", 
-            status: "Inativo", 
-            curso: "Eng Produção", 
-            entrada: "2021", 
-            saida: "2023", 
-            foto: "/imagens/Maria.jpeg",
-            info: "-",
-            email: "maria@email.com",
-            celular: "-",
-            pais: "-"
-        },
-        { 
-            nome: "Maria Clara", 
-            status: "Ativo", 
-            curso: "Biologia", 
-            entrada: "2025", 
-            saida: "-", 
-            foto: "/imagens/MariaClara.jpeg",
-            info: "-",
-            email: "mclara@email.com",
-            celular: "(31) 99999-0002",
-            pais: "(31) 98888-0002"
-        },
-        { 
-            nome: "Eduarda", 
-            status: "Ativo", 
-            curso: "Zootecnia", 
-            entrada: "2025", 
-            saida: "-", 
-            foto: "/imagens/duda.jpeg",
-            info: "Quarto Maior",
-            email: "duda@email.com",
-            celular: "(31) 99999-0003",
-            pais: "(31) 98888-0003"
-        },
-        { 
-            nome: "Julia", 
-            status: "Ativo", 
-            curso: "Direito", 
-            entrada: "2021", 
-            saida: "-", 
-            foto: "/imagens/julia.jpeg",
-            info: "IPTU ja pago",
-            email: "julia@email.com",
-            celular: "(31) 99999-0004",
-            pais: "(31) 98888-0004"
-        },
-        { 
-            nome: "Luna", 
-            status: "Ativo", 
-            curso: "Veterinária", 
-            entrada: "2024", 
-            saida: "-", 
-            foto: "/imagens/luna.jpeg",
-            info: "-",
-            email: "luna@email.com",
-            celular: "(31) 99999-0005",
-            pais: "(31) 98888-0005"
-        },
-        { 
-            nome: "Isadora", 
-            status: "Inativo", 
-            curso: "Direito", 
-            entrada: "2021", 
-            saida: "2024", 
-            foto: "/imagens/isa.jpeg",
-            info: "-",
-            email: "isa@email.com",
-            celular: "-",
-            pais: "-"
-        }
-    ];
-    res.render('moradoras', { moradoras: listaMoradoras });
-});
-*/
-
-
-
+// --- MORADORAS ---
 app.get('/moradoras', (req, res) => {
     const listaMoradoras = db.prepare("SELECT * FROM moradoras ORDER BY status ASC, nome ASC").all();
     res.render('moradoras', { moradoras: listaMoradoras });
 });
 
-
-
 app.post('/moradoras/adicionar', upload.single('foto_arquivo'), (req, res) => {
     try {
         const { nome, status, curso, entrada, saida, info, email, celular, pais } = req.body;
-
         const fotoPath = req.file ? `/imagens/${req.file.filename}` : '/imagens/default.jpeg';
 
-        const stmt = db.prepare(`
+        db.prepare(`
             INSERT INTO moradoras (nome, status, curso, entrada, saida, foto, info, email, celular, pais)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `);
-
-        stmt.run(nome, status, curso, entrada, saida, fotoPath, info, email, celular, pais);
+        `).run(nome, status, curso, entrada, saida, fotoPath, info, email, celular, pais);
         
         res.redirect('/moradoras');
     } catch (err) {
@@ -229,9 +116,7 @@ app.post('/moradoras/deletar/:id', (req, res) => {
 app.post('/moradoras/editar/:id', upload.single('foto_arquivo'), (req, res) => {
     try {
         const { nome, status, curso, entrada, saida, info, email, celular, pais } = req.body;
-        
         const moradoraAtual = db.prepare("SELECT foto FROM moradoras WHERE id = ?").get(req.params.id);
-        
         const foto = req.file ? `/imagens/${req.file.filename}` : moradoraAtual.foto;
 
         db.prepare(`
@@ -247,6 +132,7 @@ app.post('/moradoras/editar/:id', upload.single('foto_arquivo'), (req, res) => {
     }
 });
 
+// --- HISTÓRICO ---
 app.get('/historico', (req, res) => {
     const historico = db.prepare("SELECT * FROM fechamentos ORDER BY mes_referencia DESC").all();
     res.render('historico', { historico });
@@ -259,7 +145,6 @@ app.get('/historico/detalhes/:id', (req, res) => {
             FROM pagamentos_moradoras 
             WHERE fechamento_id = ?
         `).all(req.params.id);
-        
         res.json(detalhes);
     } catch (err) {
         res.status(500).json({ erro: "Não foi possível carregar os detalhes" });
@@ -269,12 +154,10 @@ app.get('/historico/detalhes/:id', (req, res) => {
 app.post('/historico/deletar/:id', (req, res) => {
     try {
         const id = req.params.id;
-
         const deletarTudo = db.transaction(() => {
             db.prepare("DELETE FROM pagamentos_moradoras WHERE fechamento_id = ?").run(id);
             db.prepare("DELETE FROM fechamentos WHERE id = ?").run(id);
         });
-
         deletarTudo();
         res.redirect('/historico?removido=true');
     } catch (err) {
@@ -283,6 +166,7 @@ app.post('/historico/deletar/:id', (req, res) => {
     }
 });
 
+// --- ESTATÍSTICAS ---
 app.get('/estatisticas', (req, res) => {
     try {
         const dadosLuz = db.prepare(`
@@ -306,20 +190,7 @@ app.get('/estatisticas', (req, res) => {
     }
 });
 
-/*
-const PORT = 3000;
-app.listen(PORT, () => {
-    console.log(`Servidor rodando em http://localhost:${PORT}`);
-});
-*/
-
-/*
-const PORT = process.env.PORT || 3000; 
-app.listen(PORT, () => {
-    console.log(`Servidor rodando na porta ${PORT}`);
-});
-*/
-
+// --- INICIALIZAÇÃO DO SERVIDOR ---
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Servidor rodando na porta ${PORT}`);
