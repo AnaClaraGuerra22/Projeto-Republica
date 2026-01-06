@@ -24,41 +24,9 @@
     </nav>
 
     <main class="container">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-            <h2 class="section-title" style="margin: 0;">Moradoras</h2>
-            <button onclick="toggleForm('form-add')" class="btn-primary" style="padding: 10px 20px;">
-                <i class="fa fa-user-plus"></i> Adicionar Moradora
-            </button>
+        <div style="margin-bottom: 30px; text-align: center;">
+            <h2 class="section-title">Moradoras</h2>
         </div>
-
-        <section id="form-add" class="glass-card" style="display:none; margin-bottom: 40px; padding: 25px;">
-            <h3 style="margin-bottom: 20px; color: var(--accent-color);">Cadastrar Nova Moradora</h3>
-            <form action="/moradoras/adicionar" method="POST" enctype="multipart/form-data">
-                <div class="input-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-                    <input type="text" name="nome" placeholder="Nome Completo" required>
-                    <select name="status">
-                        <option value="Ativo">Status: Ativo</option>
-                        <option value="Inativo">Status: Inativo</option>
-                    </select>
-                    <input type="text" name="curso" placeholder="Curso">
-                    <input type="text" name="entrada" placeholder="Data Entrada (Ex: 08/2022)">
-                    
-                    <div style="display: flex; flex-direction: column;">
-                        <label style="font-size: 0.75rem; margin-bottom: 5px; color: #666;">Foto do Computador:</label>
-                        <input type="file" name="foto_arquivo" accept="image/*" style="font-size: 0.8rem;">
-                    </div>
-
-                    <input type="email" name="email" placeholder="E-mail">
-                    <input type="text" name="celular" placeholder="Celular (WhatsApp)">
-                    <input type="text" name="pais" placeholder="Contato dos Pais">
-                </div>
-                <textarea name="info" placeholder="Informações Adicionais (Ex: Quarto, Observações)" style="width: 100%; margin-top: 15px; height: 80px; padding: 10px; border-radius: 5px; border: 1px solid #ddd;"></textarea>
-                <div style="margin-top: 20px; display: flex; gap: 10px;">
-                    <button type="submit" class="btn-primary">Salvar Cadastro</button>
-                    <button type="button" onclick="toggleForm('form-add')" class="btn-secondary" style="background: none; border: 1px solid #ccc;">Cancelar</button>
-                </div>
-            </form>
-        </section>
 
         <div class="moradoras-grid">
             <% moradoras.forEach(m => { %>
@@ -117,12 +85,63 @@
                 </div>
             <% }) %>
         </div>
+
+        <div style="margin-top: 50px; text-align: center; padding-bottom: 50px;">
+            <button id="btn-show-add" onclick="toggleForm('form-add')" class="btn-primary" style="padding: 12px 25px; width: auto;">
+                <i class="fa fa-user-plus"></i> Adicionar Nova Moradora
+            </button>
+
+            <section id="form-add" class="glass-card" style="display:none; margin-top: 30px; padding: 25px; text-align: left;">
+                <h3 style="margin-bottom: 20px; color: var(--accent-color);">Cadastrar Nova Moradora</h3>
+                <form action="/moradoras/adicionar" method="POST" enctype="multipart/form-data">
+                    <div class="input-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                        <input type="text" name="nome" placeholder="Nome Completo" required>
+                        <select name="status">
+                            <option value="Ativo">Status: Ativo</option>
+                            <option value="Inativo">Status: Inativo</option>
+                        </select>
+                        <input type="text" name="curso" placeholder="Curso">
+                        <input type="text" name="entrada" placeholder="Data Entrada (Ex: 08/2022)">
+                        
+                        <div style="display: flex; flex-direction: column;">
+                            <label style="font-size: 0.75rem; margin-bottom: 5px; color: #666;">Foto do Computador:</label>
+                            <input type="file" name="foto_arquivo" accept="image/*" style="font-size: 0.8rem;">
+                        </div>
+
+                        <input type="email" name="email" placeholder="E-mail">
+                        <input type="text" name="celular" placeholder="Celular (WhatsApp)">
+                        <input type="text" name="pais" placeholder="Contato dos Pais">
+                    </div>
+                    <textarea name="info" placeholder="Informações Adicionais (Ex: Quarto, Observações)" style="width: 100%; margin-top: 15px; height: 80px; padding: 10px; border-radius: 5px; border: 1px solid #ddd;"></textarea>
+                    <div style="margin-top: 20px; display: flex; gap: 10px;">
+                        <button type="submit" class="btn-primary" style="width: auto;">Salvar Cadastro</button>
+                        <button type="button" onclick="toggleForm('form-add')" class="btn-secondary" style="background: none; border: 1px solid #ccc; width: auto; padding: 10px 20px; cursor: pointer;">Cancelar</button>
+                    </div>
+                </form>
+            </section>
+        </div>
     </main>
 
     <script>
         function toggleForm(id) {
             const form = document.getElementById(id);
-            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+            const btnAdd = document.getElementById('btn-show-add');
+            
+            if (form.style.display === 'none' || form.style.display === '') {
+                form.style.display = 'block';
+                // Se for o formulário de adicionar, esconde o botão principal e rola a tela
+                if (id === 'form-add') {
+                    if (btnAdd) btnAdd.style.display = 'none';
+                    setTimeout(() => {
+                        form.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                }
+            } else {
+                form.style.display = 'none';
+                if (id === 'form-add' && btnAdd) {
+                    btnAdd.style.display = 'inline-block';
+                }
+            }
         }
     </script>
 </body>
