@@ -5,6 +5,21 @@ const app = express();
 const multer = require('multer');
 
 
+const fs = require('fs');
+
+// usar Render
+const pastas = [
+    path.join(__dirname, 'data'),
+    path.join(__dirname, 'public', 'imagens')
+];
+
+pastas.forEach(p => {
+    if (!fs.existsSync(p)) {
+        fs.mkdirSync(p, { recursive: true });
+        console.log(`Pasta criada: ${p}`);
+    }
+});
+
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -14,11 +29,23 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // onde salvar as fotos
+/*
 const storage = multer.diskStorage({
     destination: (req, file, cb) => { cb(null, 'public/imagens/'); },
     filename: (req, file, cb) => { cb(null, Date.now() + '-' + file.originalname); }
 });
 const upload = multer({ storage: storage });
+*/
+
+// ajuste para render
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => { 
+        cb(null, path.join(__dirname, 'public', 'imagens')); 
+    },
+    filename: (req, file, cb) => { 
+        cb(null, Date.now() + '-' + file.originalname); 
+    }
+});
 
 
 const financeiroRoutes = require('./routes/financeiro');
