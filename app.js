@@ -6,6 +6,10 @@ const multer = require('multer');
 
 
 const fs = require('fs');
+const uploadDir = path.join(__dirname, 'public', 'imagens');
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
 
 // usar Render
 const pastas = [
@@ -309,7 +313,14 @@ app.listen(PORT, () => {
 });
 */
 
+/*
 const PORT = process.env.PORT || 3000; 
 app.listen(PORT, () => {
+    console.log(`Servidor rodando na porta ${PORT}`);
+});
+*/
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`Servidor rodando na porta ${PORT}`);
 });
