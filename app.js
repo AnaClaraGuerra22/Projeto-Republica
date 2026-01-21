@@ -1,3 +1,4 @@
+/*
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
@@ -194,4 +195,177 @@ app.get('/estatisticas', (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Servidor rodando na porta ${PORT}`);
+});
+
+*/
+
+require('dotenv').config();
+const express = require('express');
+const path = require('path');
+const fs = require('fs');
+const multer = require('multer');
+const { ObjectId } = require('mongodb'); 
+const { connectDB } = require('./models/db'); 
+
+const app = express();
+
+// 1. GARANTIR QUE AS PASTAS EXISTAM
+const pastas = [
+    path.join(__dirname, 'public', 'imagens')
+];
+pastas.forEach(p => {
+    if (!fs.existsSync(p)) fs.mkdirSync(p, { recursive: true });
+});
+
+// 2. CONFIGURAÇÃO DO MULTER
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => { cb(null, path.join(__dirname, 'public', 'imagens')); },
+    filename: (req, file, cb) => { cb(null, Date.now() + '-' + file.originalname); }
+});
+const upload = multer({ storage: storage });
+
+// 3. CONFIGURAÇÕES DO APP
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// 4. ROTAS EXTERNAS
+const financeiroRoutes = require('./routes/financeiro');
+app.use('/financeiro', financeiroRoutes);
+
+app.get('/', (req, res) => res.render('index'));
+
+// --- GALERIA ---
+app.get('/galeria', async (req, res) => {
+    const db = await connectDB();
+    const fotos = await db.collection('galeria').find().sort({ data_postagem: -1 }).toArray();
+    res.render('galeria', { fotos });
+});
+
+app.post('/galeria/adicionar', upload.single('foto_galeria'), async (req, res) => {
+    try {
+        const { legenda } = req.body;
+        const url_foto = req.file ? `/imagens/${req.file.filename}` : '/imagens/placeholder.jpeg';
+        const db = await connectDB();
+        await db.collection('galeria').insertOne({ legenda, url_foto, data_postagem: new Date() });
+        res.redirect('/galeria');
+    } catch (err) { res.status(500).send("Erro ao postar foto."); }
+});
+
+app.post('/galeria/editar/:id', upload.single('foto_galeria_edit'), async (req, res) => {
+    try {
+        const db = await connectDB();
+        const { legenda } = req.body;
+        const fotoExistente = await db.collection('galeria').findOne({ _id: new ObjectId(req.params.id) });
+        const url_foto = req.file ? `/imagens/${req.file.filename}` : fotoExistente.url_foto;
+
+        await db.collection('galeria').updateOne(
+            { _id: new ObjectId(req.params.id) },
+            { $set: { legenda, url_foto } }
+        );
+        res.redirect('/galeria');
+    } catch (err) { res.status(500).send("Erro ao editar foto."); }
+});
+
+app.post('/galeria/deletar/:id', async (req, res) => {
+    const db = await connectDB();
+    await db.collection('galeria').deleteOne({ _id: new ObjectId(req.params.id) });
+    res.redirect('/galeria');
+});
+
+// --- MORADORAS ---
+app.get('/moradoras', async (req, res) => {
+    const db = await connectDB();
+    const listaMoradoras = await db.collection('moradoras').find().sort({ status: 1, nome: 1 }).toArray();
+    res.render('moradoras', { moradoras: listaMoradoras });
+});
+
+app.post('/moradoras/adicionar', upload.single('foto_arquivo'), async (req, res) => {
+    try {
+        const db = await connectDB();
+        const fotoPath = req.file ? `/imagens/${req.file.filename}` : '/imagens/default.jpeg';
+        await db.collection('moradoras').insertOne({ ...req.body, foto: fotoPath });
+        res.redirect('/moradoras');
+    } catch (err) { res.status(500).send("Erro ao salvar."); }
+});
+
+app.post('/moradoras/editar/:id', upload.single('foto_arquivo'), async (req, res) => {
+    try {
+        const db = await connectDB();
+        const moradoraAtual = await db.collection('moradoras').findOne({ _id: new ObjectId(req.params.id) });
+        const foto = req.file ? `/imagens/${req.file.filename}` : moradoraAtual.foto;
+
+        await db.collection('moradoras').updateOne(
+            { _id: new ObjectId(req.params.id) },
+            { $set: { ...req.body, foto } }
+        );
+        res.redirect('/moradoras');
+    } catch (err) { res.status(500).send("Erro ao editar moradora."); }
+});
+
+app.post('/moradoras/deletar/:id', async (req, res) => {
+    const db = await connectDB();
+    await db.collection('moradoras').deleteOne({ _id: new ObjectId(req.params.id) });
+    res.redirect('/moradoras');
+});
+
+// --- HISTORICO ---
+app.get('/historico', async (req, res) => {
+    const db = await connectDB();
+    const historico = await db.collection('fechamentos').find().sort({ mes_referencia: -1 }).toArray();
+    res.render('historico', { historico });
+});
+
+app.get('/historico/detalhes/:id', async (req, res) => {
+    try {
+        const db = await connectDB();
+        const item = await db.collection('fechamentos').findOne({ _id: new ObjectId(req.params.id) });
+        res.json(item.detalhes_pagamentos || []); 
+    } catch (err) { res.status(500).json({ erro: "Erro ao carregar detalhes" }); }
+});
+
+app.post('/historico/deletar/:id', async (req, res) => {
+    const db = await connectDB();
+    await db.collection('fechamentos').deleteOne({ _id: new ObjectId(req.params.id) });
+    res.redirect('/historico?removido=true');
+});
+
+// --- ESTATÍSTICAS ---
+app.get('/estatisticas', async (req, res) => {
+    try {
+        const db = await connectDB();
+        const fechamentos = await db.collection('fechamentos').find().sort({ mes_referencia: 1 }).toArray();
+
+        const dadosLuz = fechamentos.map(f => ({
+            mes_referencia: f.mes_referencia,
+            valor_luz: f.valor_luz,
+            valor_total_pago: f.valor_total_pago
+        }));
+
+        let dadosPagamentos = [];
+        fechamentos.forEach(f => {
+            if (f.detalhes_pagamentos) {
+                f.detalhes_pagamentos.forEach(p => {
+                    dadosPagamentos.push({
+                        mes_referencia: f.mes_referencia,
+                        nome: p.nome,
+                        valor_pago: parseFloat(p.valor)
+                    });
+                });
+            }
+        });
+
+        res.render('estatisticas', { dadosLuz, dadosPagamentos });
+    } catch (err) {
+        console.error(err);
+        res.render('estatisticas', { dadosLuz: [], dadosPagamentos: [] });
+    }
+});
+
+// --- INICIALIZAÇÃO ---
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 Servidor rodando no MongoDB Atlas na porta ${PORT}`);
 });

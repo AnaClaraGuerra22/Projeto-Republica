@@ -45,11 +45,11 @@
                                 <td><strong>R$ <%= f.valor_total_pago %></strong></td>
                                 <td>
                                     <div style="display: flex; gap: 10px; justify-content: center;">
-                                        <button class="btn-detalhes" title="Ver Detalhes" onclick="abrirDetalhes('<%= f.id %>', '<%= f.mes_referencia %>')">
+                                        <button class="btn-detalhes" title="Ver Detalhes" onclick="abrirDetalhes('<%= f._id %>', '<%= f.mes_referencia %>')">
                                             <i class="fa fa-eye"></i>
                                         </button>
 
-                                        <form action="/historico/deletar/<%= f.id %>" method="POST" onsubmit="return confirm('Tem certeza que deseja apagar permanentemente este fechamento? Isso também removerá os dados das estatísticas.')">
+                                        <form action="/historico/deletar/<%= f._id %>" method="POST" onsubmit="return confirm('Tem certeza que deseja apagar permanentemente este fechamento?')">
                                             <button type="submit" class="btn-detalhes" title="Excluir" style="color: #e74c3c;">
                                                 <i class="fa fa-trash"></i>
                                             </button>
@@ -74,7 +74,6 @@
                 <h3 id="modalTitulo" style="margin: 0; color: var(--accent-color);">Detalhes</h3>
                 <button onclick="fecharModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #888;">&times;</button>
             </div>
-            
             <table class="resultado-table">
                 <thead>
                     <tr>
@@ -82,10 +81,8 @@
                         <th>Valor Pago</th>
                     </tr>
                 </thead>
-                <tbody id="corpoTabelaDetalhes">
-                    </tbody>
+                <tbody id="corpoTabelaDetalhes"></tbody>
             </table>
-            
             <div style="margin-top: 20px; text-align: right;">
                 <button onclick="fecharModal()" class="btn-primary" style="padding: 10px 20px;">Fechar</button>
             </div>
@@ -97,43 +94,24 @@
             const corpoTabela = document.getElementById('corpoTabelaDetalhes');
             document.getElementById('modalTitulo').innerText = "Resumo: " + mes;
             corpoTabela.innerHTML = "<tr><td colspan='2' style='text-align:center;'>Carregando...</td></tr>";
-            
             document.getElementById('modalDetalhes').style.display = 'flex';
 
             try {
                 const resposta = await fetch('/historico/detalhes/' + id);
                 const dados = await resposta.json();
-                
                 corpoTabela.innerHTML = "";
-                
                 if (dados.length === 0) {
                     corpoTabela.innerHTML = "<tr><td colspan='2'>Nenhum detalhe encontrado.</td></tr>";
                     return;
                 }
-
                 dados.forEach(item => {
-                    corpoTabela.innerHTML += `
-                        <tr>
-                            <td>${item.nome}</td>
-                            <td class="valor-destaque">R$ ${item.valor}</td>
-                        </tr>
-                    `;
+                    corpoTabela.innerHTML += `<tr><td>${item.nome}</td><td class="valor-destaque">R$ ${item.valor}</td></tr>`;
                 });
             } catch (err) {
                 corpoTabela.innerHTML = "<tr><td colspan='2' style='color: red;'>Erro ao carregar dados.</td></tr>";
             }
         }
-
-        function fecharModal() {
-            document.getElementById('modalDetalhes').style.display = 'none';
-        }
-
-        window.onclick = function(event) {
-            const modal = document.getElementById('modalDetalhes');
-            if (event.target == modal) {
-                fecharModal();
-            }
-        }
+        function fecharModal() { document.getElementById('modalDetalhes').style.display = 'none'; }
     </script>
 </body>
 </html>

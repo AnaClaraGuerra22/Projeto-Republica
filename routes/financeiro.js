@@ -12,7 +12,7 @@
 
 const express = require('express');
 const router = express.Router();
-const { salvarFechamento } = require('../models/db'); // Garanta que o caminho está correto
+const { salvarFechamento } = require('../models/db'); 
 
 router.post('/calcular', (req, res) => {
     // valores fixos
@@ -75,6 +75,7 @@ router.post('/calcular', (req, res) => {
     res.render('resultado', { resultado });
 });
 
+/*
 router.post('/salvar', (req, res) => {
     try {
         const dadosParaSalvar = JSON.parse(req.body.dadosEscondidos);
@@ -83,6 +84,21 @@ router.post('/salvar', (req, res) => {
     } catch (err) {
         console.error(err);
         res.send("Erro ao salvar os dados.");
+    }
+});
+
+module.exports = router;
+
+*/
+
+router.post('/salvar', async (req, res) => { // Adicionei async aqui
+    try {
+        const dadosParaSalvar = JSON.parse(req.body.dadosEscondidos);
+        await salvarFechamento(dadosParaSalvar); 
+        res.redirect('/historico?sucesso=true');
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Erro ao salvar os dados.");
     }
 });
 

@@ -1,3 +1,4 @@
+/*
 const path = require('path');
 const Database = require('better-sqlite3');
 const fs = require('fs'); 
@@ -99,3 +100,48 @@ db.prepare(`
 module.exports = { db, salvarFechamento };
 
 //module.exports = db;
+*/
+
+require('dotenv').config();
+const { MongoClient } = require('mongodb');
+
+const uri = process.env.MONGODB_URI;
+const client = new MongoClient(uri);
+
+let db;
+
+// Função para conectar ao banco
+async function connectDB() {
+    if (db) return db;
+    try {
+        await client.connect();
+        console.log("✅ Conectado ao MongoDB Atlas!");
+        db = client.db('republica_db');
+        return db;
+    } catch (error) {
+        console.error("❌ Erro ao conectar ao MongoDB:", error);
+        throw error;
+    }
+}
+
+// Adaptando a função de salvar fechamento
+async function salvarFechamento(dados) {
+    const database = await connectDB();
+    
+    // No MongoDB, salvamos o objeto inteiro, o que é muito mais simples que no SQL
+    const fechamentoParaSalvar = {
+        mes_referencia: dados.mes,
+        valor_luz: dados.luz,
+        valor_condominio: dados.condominio,
+        despesas_proprietario: dados.despesa_prop,
+        valor_total_pago: dados.totalGeral,
+        detalhes_pagamentos: dados.detalhes, // Aqui salvamos a lista de moradoras direto no objeto
+        data_criacao: new Date()
+    };
+
+    const result = await database.collection('fechamentos').insertOne(fechamentoParaSalvar);
+    return result;
+}
+
+// Exportamos a função de conexão e a de salvar
+module.exports = { connectDB, salvarFechamento };
