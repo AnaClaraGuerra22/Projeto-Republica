@@ -231,7 +231,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// 4. ROTAS EXTERNAS
+// 4. IMPORTAÇÃO DE ROTAS EXTERNAS
 const financeiroRoutes = require('./routes/financeiro');
 app.use('/financeiro', financeiroRoutes);
 
@@ -239,9 +239,14 @@ app.get('/', (req, res) => res.render('index'));
 
 // --- GALERIA ---
 app.get('/galeria', async (req, res) => {
-    const db = await connectDB();
-    const fotos = await db.collection('galeria').find().sort({ data_postagem: -1 }).toArray();
-    res.render('galeria', { fotos });
+    try {
+        const db = await connectDB();
+        const fotos = await db.collection('galeria').find().sort({ data_postagem: -1 }).toArray() || [];
+        res.render('galeria', { fotos });
+    } catch (err) {
+        console.error("Erro ao carregar galeria:", err);
+        res.render('galeria', { fotos: [] });
+    }
 });
 
 app.post('/galeria/adicionar', upload.single('foto_galeria'), async (req, res) => {
@@ -251,7 +256,10 @@ app.post('/galeria/adicionar', upload.single('foto_galeria'), async (req, res) =
         const db = await connectDB();
         await db.collection('galeria').insertOne({ legenda, url_foto, data_postagem: new Date() });
         res.redirect('/galeria');
-    } catch (err) { res.status(500).send("Erro ao postar foto."); }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Erro ao postar foto.");
+    }
 });
 
 app.post('/galeria/editar/:id', upload.single('foto_galeria_edit'), async (req, res) => {
@@ -266,29 +274,46 @@ app.post('/galeria/editar/:id', upload.single('foto_galeria_edit'), async (req, 
             { $set: { legenda, url_foto } }
         );
         res.redirect('/galeria');
-    } catch (err) { res.status(500).send("Erro ao editar foto."); }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Erro ao editar foto.");
+    }
 });
 
 app.post('/galeria/deletar/:id', async (req, res) => {
-    const db = await connectDB();
-    await db.collection('galeria').deleteOne({ _id: new ObjectId(req.params.id) });
-    res.redirect('/galeria');
+    try {
+        const db = await connectDB();
+        await db.collection('galeria').deleteOne({ _id: new ObjectId(req.params.id) });
+        res.redirect('/galeria');
+    } catch (err) {
+        res.status(500).send("Erro ao deletar foto.");
+    }
 });
 
 // --- MORADORAS ---
 app.get('/moradoras', async (req, res) => {
-    const db = await connectDB();
-    const listaMoradoras = await db.collection('moradoras').find().sort({ status: 1, nome: 1 }).toArray();
-    res.render('moradoras', { moradoras: listaMoradoras });
+    try {
+        const db = await connectDB();
+        const listaMoradoras = await db.collection('moradoras').find().sort({ status: 1, nome: 1 }).toArray() || [];
+        res.render('moradoras', { moradoras: listaMoradoras });
+    } catch (err) {
+        console.error("Erro ao buscar moradoras:", err);
+        res.render('moradoras', { moradoras: [] });
+    }
 });
 
 app.post('/moradoras/adicionar', upload.single('foto_arquivo'), async (req, res) => {
     try {
         const db = await connectDB();
         const fotoPath = req.file ? `/imagens/${req.file.filename}` : '/imagens/default.jpeg';
-        await db.collection('moradoras').insertOne({ ...req.body, foto: fotoPath });
+        // Criando o objeto com todos os campos do corpo da requisição
+        const novaMoradora = { ...req.body, foto: fotoPath };
+        await db.collection('moradoras').insertOne(novaMoradora);
         res.redirect('/moradoras');
-    } catch (err) { res.status(500).send("Erro ao salvar."); }
+    } catch (err) {
+        console.error("Erro ao salvar moradora:", err);
+        res.status(500).send("Erro ao salvar.");
+    }
 });
 
 app.post('/moradoras/editar/:id', upload.single('foto_arquivo'), async (req, res) => {
@@ -302,20 +327,31 @@ app.post('/moradoras/editar/:id', upload.single('foto_arquivo'), async (req, res
             { $set: { ...req.body, foto } }
         );
         res.redirect('/moradoras');
-    } catch (err) { res.status(500).send("Erro ao editar moradora."); }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Erro ao editar moradora.");
+    }
 });
 
 app.post('/moradoras/deletar/:id', async (req, res) => {
-    const db = await connectDB();
-    await db.collection('moradoras').deleteOne({ _id: new ObjectId(req.params.id) });
-    res.redirect('/moradoras');
+    try {
+        const db = await connectDB();
+        await db.collection('moradoras').deleteOne({ _id: new ObjectId(req.params.id) });
+        res.redirect('/moradoras');
+    } catch (err) {
+        res.status(500).send("Erro ao deletar moradora.");
+    }
 });
 
 // --- HISTORICO ---
 app.get('/historico', async (req, res) => {
-    const db = await connectDB();
-    const historico = await db.collection('fechamentos').find().sort({ mes_referencia: -1 }).toArray();
-    res.render('historico', { historico });
+    try {
+        const db = await connectDB();
+        const historico = await db.collection('fechamentos').find().sort({ mes_referencia: -1 }).toArray() || [];
+        res.render('historico', { historico });
+    } catch (err) {
+        res.render('historico', { historico: [] });
+    }
 });
 
 app.get('/historico/detalhes/:id', async (req, res) => {
@@ -323,20 +359,26 @@ app.get('/historico/detalhes/:id', async (req, res) => {
         const db = await connectDB();
         const item = await db.collection('fechamentos').findOne({ _id: new ObjectId(req.params.id) });
         res.json(item.detalhes_pagamentos || []); 
-    } catch (err) { res.status(500).json({ erro: "Erro ao carregar detalhes" }); }
+    } catch (err) {
+        res.status(500).json({ erro: "Erro ao carregar detalhes" });
+    }
 });
 
 app.post('/historico/deletar/:id', async (req, res) => {
-    const db = await connectDB();
-    await db.collection('fechamentos').deleteOne({ _id: new ObjectId(req.params.id) });
-    res.redirect('/historico?removido=true');
+    try {
+        const db = await connectDB();
+        await db.collection('fechamentos').deleteOne({ _id: new ObjectId(req.params.id) });
+        res.redirect('/historico?removido=true');
+    } catch (err) {
+        res.status(500).send("Erro ao deletar histórico.");
+    }
 });
 
 // --- ESTATÍSTICAS ---
 app.get('/estatisticas', async (req, res) => {
     try {
         const db = await connectDB();
-        const fechamentos = await db.collection('fechamentos').find().sort({ mes_referencia: 1 }).toArray();
+        const fechamentos = await db.collection('fechamentos').find().sort({ mes_referencia: 1 }).toArray() || [];
 
         const dadosLuz = fechamentos.map(f => ({
             mes_referencia: f.mes_referencia,
